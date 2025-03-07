@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int totalSeconds = twentyFiveMinutes;
   bool isRunning = false;
   int totalPomodoros = 0;
-  late Timer timer;
+  late Timer? timer;
 
   void onStartPressed() {
     timer = Timer.periodic(Duration(seconds: 1), onTick);
@@ -39,9 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void onPausePressed() {
-    timer.cancel();
+    timer?.cancel();
     setState(() {
       isRunning = false;
+    });
+  }
+
+  void onResetPressed() {
+    timer?.cancel();
+    setState(() {
+      isRunning = false;
+      totalSeconds = twentyFiveMinutes;
     });
   }
 
@@ -72,19 +80,30 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Flexible(
             flex: 3,
-            child: Container(
-              child: Center(
-                child: IconButton(
-                  iconSize: 98,
-                  color: Theme.of(context).cardColor,
-                  icon: Icon(
-                    isRunning
-                        ? Icons.pause_circle_outline
-                        : Icons.play_circle_outline,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Center(
+                  child: IconButton(
+                    iconSize: 98,
+                    color: Theme.of(context).cardColor,
+                    icon: Icon(
+                      isRunning
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outline,
+                    ),
+                    onPressed: isRunning ? onPausePressed : onStartPressed,
                   ),
-                  onPressed: isRunning ? onPausePressed : onStartPressed,
                 ),
-              ),
+                Center(
+                  child: IconButton(
+                    iconSize: 40,
+                    color: Theme.of(context).cardColor,
+                    icon: Icon(Icons.restore_outlined),
+                    onPressed: onResetPressed,
+                  ),
+                ),
+              ],
             ),
           ),
           Flexible(
@@ -132,5 +151,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel(); // 타이머가 활성화되어 있다면 정리
+    super.dispose();
   }
 }
