@@ -63,6 +63,32 @@ class _DetailSereenState extends State<DetailSereen> {
               ),
             ],
           ),
+          SizedBox(height: 25),
+          FutureBuilder(
+            future: webtoonDetail,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        snapshot.data!.about,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(height: 15),
+                      Text(
+                        '${snapshot.data!.genre} / ${snapshot.data!.age}',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return Text("...");
+            },
+          ),
         ],
       ),
     );
