@@ -10,15 +10,6 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        textTheme: TextTheme(
-          headlineMedium: TextStyle(color: Color(0xFF232B55)),
-        ),
-        cardColor: Color(0xFFF4EBBD),
-        scaffoldBackgroundColor: Color(0xFFE7626C),
-      ),
-      home: HomeScreen(),
-    );
+    return MaterialApp(home: HomeScreen());
   }
 }
