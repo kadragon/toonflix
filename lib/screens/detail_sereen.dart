@@ -1,9 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:toonflix/models/webtoon_detail_model.dart';
+import 'package:toonflix/models/webtoon_episode_model.dart';
 import 'package:toonflix/models/webtoon_model.dart';
+import 'package:toonflix/services/api_service.dart';
 
-class DetailSereen extends StatelessWidget {
+class DetailSereen extends StatefulWidget {
   final WebtoonModel webtoon;
+
   const DetailSereen({super.key, required this.webtoon});
+
+  @override
+  State<DetailSereen> createState() => _DetailSereenState();
+}
+
+class _DetailSereenState extends State<DetailSereen> {
+  late Future<WebtoonDetailModel> webtoonDetail;
+  late Future<List<WebtoonEpisodeModel>> episodes;
+
+  @override
+  void initState() {
+    super.initState();
+    webtoonDetail = ApiService.getToonById(widget.webtoon.id);
+    episodes = ApiService.getLatestEpisodesById(widget.webtoon.id);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +32,7 @@ class DetailSereen extends StatelessWidget {
         elevation: 2,
         foregroundColor: Colors.green,
         backgroundColor: Colors.white,
-        title: Text(webtoon.title, style: TextStyle(fontSize: 24)),
+        title: Text(widget.webtoon.title, style: TextStyle(fontSize: 24)),
       ),
       body: Column(
         children: [
@@ -22,7 +41,7 @@ class DetailSereen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Hero(
-                tag: webtoon.id,
+                tag: widget.webtoon.id,
                 child: Container(
                   width: 250,
                   decoration: BoxDecoration(
@@ -37,7 +56,7 @@ class DetailSereen extends StatelessWidget {
                   ),
                   clipBehavior: Clip.hardEdge,
                   child: Image.network(
-                    webtoon.thumb,
+                    widget.webtoon.thumb,
                     headers: const {"Referer": "https://comic.naver.com"},
                   ),
                 ),
