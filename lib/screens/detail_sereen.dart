@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:toonflix/models/webtoon_model.dart';
 
 class DetailSereen extends StatelessWidget {
-  final String title, thumb, id;
-
-  const DetailSereen({
-    super.key,
-    required this.title,
-    required this.thumb,
-    required this.id,
-  });
+  final WebtoonModel webtoon;
+  const DetailSereen({super.key, required this.webtoon});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +13,7 @@ class DetailSereen extends StatelessWidget {
         elevation: 2,
         foregroundColor: Colors.green,
         backgroundColor: Colors.white,
-        title: Text(title, style: TextStyle(fontSize: 24)),
+        title: Text(webtoon.title, style: TextStyle(fontSize: 24)),
       ),
       body: Column(
         children: [
@@ -27,7 +22,7 @@ class DetailSereen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Hero(
-                tag: id,
+                tag: webtoon.id,
                 child: Container(
                   width: 250,
                   decoration: BoxDecoration(
@@ -42,7 +37,7 @@ class DetailSereen extends StatelessWidget {
                   ),
                   clipBehavior: Clip.hardEdge,
                   child: Image.network(
-                    thumb,
+                    webtoon.thumb,
                     headers: const {"Referer": "https://comic.naver.com"},
                   ),
                 ),

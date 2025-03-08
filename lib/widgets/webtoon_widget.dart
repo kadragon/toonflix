@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:toonflix/models/webtoon_model.dart';
 import 'package:toonflix/screens/detail_sereen.dart';
 
 class Webtoon extends StatelessWidget {
-  final String title, thumb, id;
+  final WebtoonModel webtoon;
 
-  const Webtoon({
-    super.key,
-    required this.title,
-    required this.thumb,
-    required this.id,
-  });
+  const Webtoon({super.key, required this.webtoon});
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +14,7 @@ class Webtoon extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder:
-                (context) => DetailSereen(title: title, thumb: thumb, id: id),
+            builder: (context) => DetailSereen(webtoon: webtoon),
             fullscreenDialog: true,
           ),
         );
@@ -27,7 +22,7 @@ class Webtoon extends StatelessWidget {
       child: Column(
         children: [
           Hero(
-            tag: id,
+            tag: webtoon.id,
             child: Container(
               width: 250,
               decoration: BoxDecoration(
@@ -42,13 +37,13 @@ class Webtoon extends StatelessWidget {
               ),
               clipBehavior: Clip.hardEdge,
               child: Image.network(
-                thumb,
+                webtoon.thumb,
                 headers: const {"Referer": "https://comic.naver.com"},
               ),
             ),
           ),
           SizedBox(height: 10),
-          Text(title, style: TextStyle(fontSize: 22)),
+          Text(webtoon.title, style: TextStyle(fontSize: 22)),
         ],
       ),
     );
