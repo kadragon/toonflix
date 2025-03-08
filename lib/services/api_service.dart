@@ -8,52 +8,43 @@ import 'package:toonflix/models/webtoon_model.dart';
 class ApiService {
   static const String baseUrl =
       "https://webtoon-crawler.nomadcoders.workers.dev";
-  static const String today = "today";
+  static const String endpointToday = "today";
+  static const String endpointEpisodes = "episodes";
+
+  static Future<dynamic> _fetchData(String endpoint) async {
+    final url = Uri.parse('$baseUrl/$endpoint');
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        throw Exception(
+          'Failed to load data. Status code: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      throw Exception('Network request failed: $e');
+    }
+  }
 
   static Future<List<WebtoonModel>> getTodayToons() async {
-    List<WebtoonModel> webtoonInstances = [];
-
-    final url = Uri.parse("$baseUrl/$today");
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List<dynamic> webtoons = jsonDecode(response.body);
-      for (var webtoon in webtoons) {
-        webtoonInstances.add(WebtoonModel.fromJson(webtoon));
-      }
-
-      return webtoonInstances;
-    }
-    throw Error();
+    final List<dynamic> webtoons = await _fetchData(endpointToday);
+    return webtoons.map((webtoon) => WebtoonModel.fromJson(webtoon)).toList();
   }
 
   static Future<WebtoonDetailModel> getToonById(String id) async {
-    final url = Uri.parse("$baseUrl/$id");
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final webtoon = jsonDecode(response.body);
-      return WebtoonDetailModel.fromJson(webtoon);
-    }
-    throw Error();
+    final webtoon = await _fetchData(id);
+    return WebtoonDetailModel.fromJson(webtoon);
   }
 
   static Future<List<WebtoonEpisodeModel>> getLatestEpisodesById(
     String id,
   ) async {
-    List<WebtoonEpisodeModel> episodesInstances = [];
-
-    final url = Uri.parse("$baseUrl/$id/episodes");
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List<dynamic> episodes = jsonDecode(response.body);
-      for (var episode in episodes) {
-        episodesInstances.add(WebtoonEpisodeModel.fromJson(episode));
-      }
-
-      return episodesInstances;
-    }
-
-    throw Error();
+    final List<dynamic> episodes = await _fetchData('$id/$endpointEpisodes');
+    return episodes
+        .map((episode) => WebtoonEpisodeModel.fromJson(episode))
+        .toList();
   }
 }
