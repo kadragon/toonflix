@@ -34,62 +34,114 @@ class _DetailSereenState extends State<DetailSereen> {
         backgroundColor: Colors.white,
         title: Text(widget.webtoon.title, style: TextStyle(fontSize: 24)),
       ),
-      body: Column(
-        children: [
-          SizedBox(height: 50),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(50),
+          child: Column(
             children: [
-              Hero(
-                tag: widget.webtoon.id,
-                child: Container(
-                  width: 250,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        blurRadius: 15,
-                        offset: Offset(10, 10),
-                        color: Colors.black.withValues(alpha: 0.3),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: widget.webtoon.id,
+                    child: Container(
+                      width: 250,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 15,
+                            offset: Offset(10, 10),
+                            color: Colors.black.withValues(alpha: 0.3),
+                          ),
+                        ],
                       ),
-                    ],
+                      clipBehavior: Clip.hardEdge,
+                      child: Image.network(
+                        widget.webtoon.thumb,
+                        headers: const {"Referer": "https://comic.naver.com"},
+                      ),
+                    ),
                   ),
-                  clipBehavior: Clip.hardEdge,
-                  child: Image.network(
-                    widget.webtoon.thumb,
-                    headers: const {"Referer": "https://comic.naver.com"},
-                  ),
-                ),
+                ],
+              ),
+              SizedBox(height: 25),
+              FutureBuilder(
+                future: webtoonDetail,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          snapshot.data!.about,
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(height: 15),
+                        Text(
+                          '${snapshot.data!.genre} / ${snapshot.data!.age}',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    );
+                  }
+                  return Text("...");
+                },
+              ),
+              SizedBox(height: 25),
+              FutureBuilder(
+                future: episodes,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Column(
+                      children: [
+                        for (var episode in snapshot.data!)
+                          Container(
+                            margin: EdgeInsets.only(bottom: 10),
+                            decoration: BoxDecoration(
+                              color: Colors.green.shade400,
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  blurRadius: 5,
+                                  offset: Offset(5, 5),
+                                  color: Colors.black.withValues(alpha: 0.1),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    episode.title,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }
+                  return Container();
+                },
               ),
             ],
           ),
-          SizedBox(height: 25),
-          FutureBuilder(
-            future: webtoonDetail,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        snapshot.data!.about,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      SizedBox(height: 15),
-                      Text(
-                        '${snapshot.data!.genre} / ${snapshot.data!.age}',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
-                );
-              }
-              return Text("...");
-            },
-          ),
-        ],
+        ),
       ),
     );
   }
