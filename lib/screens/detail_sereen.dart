@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toonflix/models/webtoon_detail_model.dart';
 import 'package:toonflix/models/webtoon_episode_model.dart';
 import 'package:toonflix/models/webtoon_model.dart';
@@ -17,12 +18,45 @@ class DetailSereen extends StatefulWidget {
 class _DetailSereenState extends State<DetailSereen> {
   late Future<WebtoonDetailModel> webtoonDetail;
   late Future<List<WebtoonEpisodeModel>> episodes;
+  late SharedPreferences perfs;
+  bool isLiked = false;
+
+  Future initPrefs() async {
+    perfs = await SharedPreferences.getInstance();
+    final likedToons = perfs.getStringList('likedToons');
+    if (likedToons != null) {
+      if (likedToons.contains(widget.webtoon.id)) {
+        setState(() {
+          isLiked = true;
+        });
+      }
+    } else {
+      await perfs.setStringList('likedToons', []);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     webtoonDetail = ApiService.getToonById(widget.webtoon.id);
     episodes = ApiService.getLatestEpisodesById(widget.webtoon.id);
+
+    initPrefs();
+  }
+
+  onHeartTap() async {
+    final likedToons = perfs.getStringList('likedToons');
+    if (likedToons != null) {
+      if (isLiked) {
+        likedToons.remove(widget.webtoon.id);
+      } else {
+        likedToons.add(widget.webtoon.id);
+      }
+      await perfs.setStringList('likedToons', likedToons);
+      setState(() {
+        isLiked = !isLiked;
+      });
+    }
   }
 
   @override
@@ -34,6 +68,14 @@ class _DetailSereenState extends State<DetailSereen> {
         foregroundColor: Colors.green,
         backgroundColor: Colors.white,
         title: Text(widget.webtoon.title, style: TextStyle(fontSize: 24)),
+        actions: [
+          IconButton(
+            onPressed: onHeartTap,
+            icon: Icon(
+              isLiked ? Icons.favorite : Icons.favorite_outline_rounded,
+            ),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
